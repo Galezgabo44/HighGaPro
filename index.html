@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HighGaPro - Tienda Gamer</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f0f14;color:#fff}
+header{position:sticky;top:0;z-index:10;background:#15151d;padding:12px 18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:2px solid #ff6b00}
+.logo{font-size:26px;font-weight:900;color:#ff6b00}.logo span{color:#fff}
+nav{display:flex;gap:8px;flex-wrap:wrap}nav button{background:#22222e;color:#fff;border:0;padding:9px 14px;border-radius:20px;cursor:pointer;font-weight:700}nav button.active{background:#ff6b00}
+#search{flex:1;min-width:180px;padding:10px 14px;border-radius:20px;border:0;background:#22222e;color:#fff}
+.cartBtn{background:#ff6b00;border:0;color:#fff;padding:10px 16px;border-radius:20px;font-weight:900;cursor:pointer}
+.loginBtn{background:#fff;border:0;padding:10px 14px;border-radius:20px;font-weight:900;cursor:pointer}
+main{padding:18px;max-width:1250px;margin:auto}
+.hero{background:linear-gradient(90deg,#ff6b00,#7c3aed);padding:28px;border-radius:18px}.hero h1{margin:0;font-size:34px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.filters button{background:#22222e;color:#fff;border:0;padding:8px 14px;border-radius:20px;cursor:pointer}.filters button.active{background:#fff;color:#000}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.card{background:#1b1b26;border-radius:16px;overflow:hidden;border:1px solid #2a2a38}.card img{width:100%;height:165px;object-fit:cover;background:#000}
+.card-body{padding:12px}.cat{font-size:11px;color:#ff9a4d;text-transform:uppercase;font-weight:900}.card h3{margin:6px 0;font-size:16px;min-height:38px}.price{font-size:20px;font-weight:900;color:#00ff9d}.stock{font-size:12px;color:#aaa}.stock.low{color:#ff4d4d;font-weight:900}
+.card button{width:100%;margin-top:8px;padding:10px;border:0;border-radius:10px;font-weight:900;cursor:pointer}.add{background:#ff6b00;color:#fff}.fav{background:#2a2a38;color:#fff}
+section{display:none}section.active{display:block}
+table{width:100%;border-collapse:collapse;background:#1b1b26;border-radius:12px;overflow:hidden}th,td{padding:10px;text-align:left;border-bottom:1px solid #2a2a38;font-size:13px}th{background:#ff6b00}
+.charts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}.chartBox{background:#1b1b26;padding:14px;border-radius:16px}canvas{width:100%;background:#fff;border-radius:12px}
+.pack{background:#1b1b26;border:2px solid #ff6b00;border-radius:16px;padding:16px}.old{text-decoration:line-through;color:#aaa}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:99}.modal.open{display:flex}.modalBox{background:#1b1b26;padding:20px;border-radius:16px;width:90%;max-width:420px}.modalBox input{width:100%;padding:11px;margin:8px 0;border-radius:10px;border:0;background:#2a2a38;color:#fff}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">High<span>GaPro</span></div>
+<nav>
+<button class="active" onclick="show('inicio',this)">Inicio</button>
+<button onclick="show('catalogo',this)">Catálogo</button>
+<button onclick="show('inventario',this)">Inventario / Stock</button>
+<button onclick="show('graficas',this)">Gráficas</button>
+<button onclick="show('ofertas',this)">Ofertas</button>
+</nav>
+<input id="search" placeholder="🔍 Buscar... RTX, Ryzen, RAM, teclado..." oninput="render()">
+<button class="cartBtn" onclick="verCarrito()">🛒 Carrito: <span id="cartCount">0</span> - $<span id="cartTotal">0</span></button>
+<button class="loginBtn" id="loginBtn" onclick="openLogin()">👤 Login</button>
+</header>
+<main>
+<section id="inicio" class="active">
+<div class="hero"><h1>🔥 HighGaPro - Arma tu PC sin límites</h1><p>Los mejores componentes y periféricos. Envío a todo México.</p><p id="saludo">Inicia sesión para ver ofertas personalizadas.</p></div>
+<h2>⭐ Productos Destacados</h2><div class="grid" id="destacados"></div>
+<h2>🎁 Packs de la semana</h2><div class="grid" id="packsInicio"></div>
+</section>
+<section id="catalogo"><h2>📦 Catálogo - 36 productos</h2><p>Busca arriba o filtra. Nada se repite.</p><div class="filters" id="filters"></div><div class="grid" id="catalogoGrid"></div></section>
+<section id="inventario"><h2>📊 Inventario / Stock</h2><table><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th></tr></thead><tbody id="invBody"></tbody></table></section>
+<section id="graficas"><h2>📈 Gráficas de Burbuja - 3</h2><p>Cada burbuja es un producto. Más grande = más vendido.</p><div class="charts"><div class="chartBox"><h3>1. Ventas vs Precio</h3><canvas id="c1" width="360" height="260"></canvas></div><div class="chartBox"><h3>2. Stock vs Popularidad</h3><canvas id="c2" width="360" height="260"></canvas></div><div class="chartBox"><h3>3. Ofertas vs Descuento</h3><canvas id="c3" width="360" height="260"></canvas></div></div></section>
+<section id="ofertas"><h2>🔥 Ofertas - Packs</h2><div class="grid" id="ofertasGrid"></div></section>
+</main>
+<div class="modal" id="loginModal"><div class="modalBox"><h2>👤 Login HighGaPro (Demo)</h2><p>Es falso, entra con cualquier usuario.</p><input id="userInput" placeholder="Usuario, ej: gael_pro"><input type="password" placeholder="Contraseña (cualquiera)"><button style="width:100%;padding:12px;background:#ff6b00;border:0;border-radius:10px;color:#fff;font-weight:900" onclick="hacerLogin()">Entrar</button><button style="width:100%;margin-top:8px;padding:10px;background:#2a2a38;border:0;border-radius:10px;color:#fff" onclick="closeLogin()">Cancelar</button></div></div>
+<div class="modal" id="cartModal"><div class="modalBox"><h2>🛒 Tu Carrito</h2><div id="cartItems"></div><h3 id="cartTotal2"></h3><button style="width:100%;padding:12px;background:#00c853;border:0;border-radius:10px;font-weight:900" onclick="comprar()">Comprar ahora</button><button style="width:100%;margin-top:8px;padding:10px;background:#2a2a38;border:0;border-radius:10px;color:#fff" onclick="cerrarCarrito()">Cerrar</button></div></div>
+<script>
+const IMG={gpu:"https://www.geektopia.es/storage/geek/products/nvidia/geforce-rtx-4060-ti/geforce-ada-rtx4060ti-3qtr-back-left.webp",cpu:"https://www.pccompu.com.uy/imgs/productos/productos34_59126.webp",ram:"https://sutechngames.com/assets/pictures/ram/gskill-trident-ddr5.png",teclado:"https://down-br.img.susercontent.com/file/br-11134207-820m2-moqh60nnpq8093",mouse:"https://redragon.co.za/wp-content/uploads/2026/06/RD-M612-RGB_wr_01-1-768x768.jpg",ssd:"https://wp.directmacro.com/wp-content/uploads/2024/07/NVMe-Image.jpg",monitor:"https://cdn.shopify.com/s/files/1/0026/9906/7504/files/XG2405-hero_600x600.jpg?v=1741176486",gabinete:"https://intercompras.com/images/product/XTREME_PC_GAMING_XTBRI932GB5070TPB_250911153704.jpg",u1:"https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&q=80",u2:"https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600&q=80",u3:"https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&q=80",u4:"https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&q=80",u5:"https://images.unsplash.com/photo-1600348712270-5af9e3590f66?w=600&q=80",u6:"https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=80"};
+const productos=[
+{n:"RTX 4060 8GB",c:"Gráficas",p:7499,s:12,img:IMG.gpu,v:95},{n:"RTX 4070 12GB",c:"Gráficas",p:12999,s:7,img:IMG.u1,v:88},{n:"RTX 4060 Ti",c:"Gráficas",p:9499,s:9,img:IMG.gpu,v:82},{n:"RX 7600 8GB",c:"Gráficas",p:6599,s:14,img:IMG.u1,v:70},{n:"RX 6700 XT",c:"Gráficas",p:8999,s:5,img:IMG.u1,v:65},
+{n:"Ryzen 7 7800X3D",c:"Procesadores",p:8999,s:10,img:IMG.cpu,v:98},{n:"Ryzen 5 5600",c:"Procesadores",p:2899,s:22,img:IMG.cpu,v:90},{n:"Intel Core i5-12400F",c:"Procesadores",p:3499,s:18,img:IMG.u2,v:85},{n:"Intel Core i7-13700K",c:"Procesadores",p:7999,s:6,img:IMG.u2,v:80},{n:"Ryzen 9 7900X",c:"Procesadores",p:10999,s:4,img:IMG.cpu,v:75},
+{n:"RAM DDR5 32GB RGB",c:"RAM",p:2499,s:25,img:IMG.ram,v:92},{n:"RAM DDR4 16GB",c:"RAM",p:899,s:30,img:IMG.ram,v:88},{n:"RAM DDR5 16GB 6000MHz",c:"RAM",p:1499,s:20,img:IMG.ram,v:84},{n:"RAM DDR4 32GB",c:"RAM",p:1699,s:15,img:IMG.u3,v:76},
+{n:"SSD NVMe 1TB",c:"Almacenamiento",p:1299,s:28,img:IMG.ssd,v:95},{n:"SSD NVMe 500GB",c:"Almacenamiento",p:799,s:35,img:IMG.ssd,v:90},{n:"SSD 2TB Gen4",c:"Almacenamiento",p:2499,s:11,img:IMG.ssd,v:82},{n:"HDD 2TB",c:"Almacenamiento",p:1199,s:16,img:IMG.u3,v:60},
+{n:"Teclado Mecánico RGB",c:"Periféricos",p:1199,s:24,img:IMG.teclado,v:93},{n:"Mouse Gamer 26K DPI",c:"Periféricos",p:799,s:32,img:IMG.mouse,v:91},{n:"Mouse Inalámbrico Pro",c:"Periféricos",p:999,s:19,img:IMG.mouse,v:85},{n:"Audífonos 7.1 RGB",c:"Periféricos",p:1299,s:17,img:IMG.u4,v:88},{n:"Silla Gamer Ergonómica",c:"Periféricos",p:3499,s:8,img:IMG.u4,v:80},{n:"Mousepad XL RGB",c:"Periféricos",p:399,s:40,img:IMG.u4,v:72},
+{n:"Monitor 24\" 144Hz",c:"Monitores",p:3299,s:13,img:IMG.monitor,v:94},{n:"Monitor 27\" 165Hz QHD",c:"Monitores",p:5499,s:9,img:IMG.monitor,v:89},{n:"Monitor 32\" Curvo 144Hz",c:"Monitores",p:6999,s:6,img:IMG.monitor,v:81},{n:"Monitor 24\" 75Hz",c:"Monitores",p:1999,s:21,img:IMG.u5,v:70},
+{n:"Gabinete RGB Cristal",c:"Gabinetes",p:1499,s:12,img:IMG.gabinete,v:87},{n:"Gabinete Mid Tower",c:"Gabinetes",p:999,s:18,img:IMG.gabinete,v:78},{n:"Fuente 750W 80+ Gold",c:"Fuentes",p:1799,s:14,img:IMG.u6,v:83},{n:"Fuente 650W 80+ Bronze",c:"Fuentes",p:1199,s:20,img:IMG.u6,v:77},{n:"Enfriamiento Líquido 240mm",c:"Refrigeración",p:1599,s:10,img:IMG.u6,v:84},{n:"Ventilador RGB x3 Pack",c:"Refrigeración",p:599,s:26,img:IMG.u5,v:73},{n:"Placa Madre B550",c:"Placas",p:2399,s:9,img:IMG.u2,v:79},{n:"Placa Madre B760 DDR5",c:"Placas",p:2899,s:7,img:IMG.u2,v:76}];
+const packs=[
+{n:"Pack Gamer Inicio",d:"Ryzen 5 + 16GB RAM + SSD 500GB + Gabinete",old:6999,p:5499,img:IMG.gabinete},
+{n:"Pack Streamer Pro",d:"Ryzen 7 + RTX 4060 + 32GB RAM + Audífonos",old:22999,p:18999,img:IMG.u4},
+{n:"Pack Oficina + Gaming",d:"i5 + 16GB + Monitor 144Hz + Teclado + Mouse",old:11999,p:9499,img:IMG.monitor},
+{n:"Pack Periféricos Full",d:"Teclado + Mouse + Audífonos + Mousepad XL",old:3199,p:2299,img:IMG.teclado}];
+let filtro="Todo",carrito=[];
+function show(id,btn){document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');if(id==='graficas')drawCharts();if(id==='inventario')renderInv();}
+function cardHTML(pr,i){return `<div class="card"><img src="${pr.img}" onerror="this.src='${IMG.u1}'"><div class="card-body"><div class="cat">${pr.c}</div><h3>${pr.n}</h3><div class="price">$${pr.p.toLocaleString()}</div><div class="stock ${pr.s<8?'low':''}">Stock: ${pr.s} ${pr.s<8?'⚠️ ¡Quedan pocos!':''}</div><button class="add" onclick="addCart(${i})">🛒 Agregar al Carrito</button><button class="fav" onclick="toggleFav(this)">❤️ Favorito</button></div></div>`}
+function render(){let q=document.getElementById('search').value.toLowerCase();let list=productos.filter(p=>(filtro==='Todo'||p.c===filtro)&&(p.n.toLowerCase().includes(q)||p.c.toLowerCase().includes(q)));document.getElementById('catalogoGrid').innerHTML=list.map(pr=>cardHTML(pr,productos.indexOf(pr))).join('');let dest=[...productos].sort((a,b)=>b.v-a.v).slice(0,4);document.getElementById('destacados').innerHTML=dest.map(pr=>cardHTML(pr,productos.indexOf(pr))).join('');document.getElementById('packsInicio').innerHTML=packs.map(pk=>`<div class="card"><img src="${pk.img}"><div class="card-body"><h3>${pk.n}</h3><p>${pk.d}</p><div><span class="old">$${pk.old}</span> <span class="price">$${pk.p}</span></div><button class="add" onclick="alert('Pack agregado! ${pk.n}')">Agregar Pack</button></div></div>`).join('');document.getElementById('ofertasGrid').innerHTML=packs.map(pk=>`<div class="pack"><h3>${pk.n}</h3><p>${pk.d}</p><p><span class="old">$${pk.old.toLocaleString()}</span> <b style="color:#00ff9d;font-size:22px">$${pk.p.toLocaleString()}</b></p><p>Te ahorras $${(pk.old-pk.p).toLocaleString()}</p><button style="width:100%;padding:11px;background:#ff6b00;border:0;border-radius:10px;color:#fff;font-weight:900" onclick="alert('Pack agregado!')">Comprar Pack</button></div>`).join('');let cats=["Todo",...new Set(productos.map(p=>p.c))];document.getElementById('filters').innerHTML=cats.map(c=>`<button class="${c===filtro?'active':''}" onclick="filtro='${c}';render()">${c}</button>`).join('');}
+function renderInv(){document.getElementById('invBody').innerHTML=productos.map(p=>`<tr><td>${p.n}</td><td>${p.c}</td><td>$${p.p}</td><td>${p.s}</td><td>${p.s<8?'🔴 Bajo':p.s<15?'🟡 Medio':'🟢 En stock'}</td></tr>`).join('')}
+function addCart(i){if(productos[i].s<=0){alert('Sin stock');return}productos[i].s--;carrito.push(productos[i]);updateCart();render();alert(productos[i].n+' agregado 🛒')}
+function updateCart(){let total=carrito.reduce((a,b)=>a+b.p,0);document.getElementById('cartCount').innerText=carrito.length;document.getElementById('cartTotal').innerText=total.toLocaleString()}
+function verCarrito(){document.getElementById('cartItems').innerHTML=carrito.length?carrito.map(p=>`<p>• ${p.n} - $${p.p}</p>`).join(''):'<p>Carrito vacío</p>';document.getElementById('cartTotal2').innerText='Total: $'+carrito.reduce((a,b)=>a+b.p,0).toLocaleString();document.getElementById('cartModal').classList.add('open')}
+function cerrarCarrito(){document.getElementById('cartModal').classList.remove('open')}
+function comprar(){if(!carrito.length){alert('Carrito vacío');return}alert('¡Compra simulada exitosa! Gracias por comprar en HighGaPro 🎉');carrito=[];updateCart();cerrarCarrito()}
+function toggleFav(btn){btn.innerText=btn.innerText.includes('✅')?'❤️ Favorito':'✅ En Favoritos';}
+function openLogin(){document.getElementById('loginModal').classList.add('open')}
+function closeLogin(){document.getElementById('loginModal').classList.remove('open')}
+function hacerLogin(){let u=document.getElementById('userInput').value||'Invitado';document.getElementById('loginBtn').innerText='👤 Hola, '+u;document.getElementById('saludo').innerText='Bienvenido '+u+' 👋 Tienes 10% en tu primer pack.';closeLogin();alert('Bienvenido '+u+' (Login demo)')}
+function drawBubble(id){let cv=document.getElementById(id),ctx=cv.getContext('2d');ctx.clearRect(0,0,360,260);let colors=['#ff6b00','#7c3aed','#00c853','#2196f3','#ff4081'];productos.slice(0,15).forEach((p,i)=>{let x=30+Math.random()*280,y=30+Math.random()*180,r=12+p.v/6;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=colors[i%colors.length]+'aa';ctx.fill();ctx.fillStyle='#000';ctx.font='11px Arial';ctx.fillText(p.n.slice(0,10),x-r,y);});}
+function drawCharts(){drawBubble('c1');drawBubble('c2');drawBubble('c3')}
+render();renderInv();
+</script>
+</body>
+</html>
